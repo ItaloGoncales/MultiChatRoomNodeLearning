@@ -71,32 +71,7 @@
 		<div class="container">
             <div class="row conversa" id="conversa">
 				<div class="col-md-1"></div>
-				<div class="col-md-10">
-					<div class="dialogo">
-						<h4>Jorge</h4>
-						<p>Fala José, blz cara?</p>
-					</div>
-					
-					<div class="dialogo">
-						<h4>José</h4>
-						<p>Opa, tudo certo!</p>
-					</div>
-					
-					<div class="dialogo">
-						<h4>Jorge</h4>
-						<p>Vai estudar mais sobre NodeJS hoje?</p>
-					</div>
-					
-					<div class="dialogo">
-						<h4>José</h4>
-						<p>Sim, com certeza. Vamos trabalhar com Websockets hoje, o assunto é bem interessante</p>
-					</div>
-					
-					<div class="dialogo">
-						<h4>Jorge</h4>
-						<p>Show de bola, comunicação bi-direcional em páginas ou sistemas web é muito bacana mesmo</p>
-					</div>
-				</div>
+				<div class="col-md-10" id="dialogues"></div>
 				<div class="col-md-1"></div>
                 
             </div>
@@ -127,16 +102,14 @@
 		<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
 			<div class="container">
 				<div class="panel-body campo-mensagem">
-					<form>
-						<div class="col-md-12">
-							<div class="input-group">
-								<input type="text" class="form-control" placeholder="Mensagem">
-								<span class="input-group-btn">
-									<button class="btn btn-default" type="button">></button>
-								</span>
-							</div>
+					<div class="col-md-12">
+						<div class="input-group">
+							<input type="text" class="form-control" placeholder="Mensagem" id="message">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" id="send_message">></button>
+							</span>
 						</div>
-					</form>
+					</div>
 				</div>
 			</div>
 		</nav>		
@@ -146,6 +119,30 @@
 		<script src="/socket.io/socket.io.js"></script>
 		<script>
 			var socket = io('http://localhost:3030');
+
+			
+			socket.on('msgToClient', function(data){
+				var html = '';
+				
+				html += '<div class="dialogo">';
+				html += '<h4>' + data.apelido + '</h4>';
+				html += '<p>' + data.message  + '</p>';
+				html += '</div>';
+				
+				$('#dialogues').append(html);
+			})
+			
+			$("#send_message").click(function(){
+				socket.emit(
+					'msgToServer',
+					{
+						apelido: '<%= apelido %>',
+						message: $('#message').val(),
+					}
+				);
+
+				$('#message').val('');
+			});
 		</script>
 
 	</body>
